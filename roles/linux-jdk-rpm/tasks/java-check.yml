@@ -1,0 +1,9 @@
+- name: 'Java version {{ flag }} rpm installation'
+  shell: command -v java && java -version
+  register: jversion
+
+- debug: var='{{ item }}'
+  with_items:
+  - jversion.stdout
+  - jversion.stderr
+

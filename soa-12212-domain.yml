@@ -1,0 +1,22 @@
+---
+- hosts: soa
+  connection: ssh
+  remote_user: "{{ oracle_user }}"
+  #become: true
+  gather_facts: no 
+  vars_files:
+  - group-vars/linux-wls-vars.yml
+  - group-vars/infra-vars.yml
+  roles:
+  - role: linux-wls
+    become_user: root
+    become_method: sudo
+    tags: linux
+
+  - role: linux-jdk-rpm
+    become_user: root
+    become_method: sudo 
+    tags: jdk
+
+  - role: fmw-infra
+    tags: infra

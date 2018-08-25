@@ -1,0 +1,15 @@
+- name: Java version before rpm installation
+  include: java-check.yml flag=before
+
+- name: Copy jdk rpm to remote server
+  copy: 
+    src: '{{ local_sw_path }}/{{ jdk_name }}'
+    dest: '{{ remote_jdk_path }}'
+
+- name: Install jdk rpm
+  yum:
+    name: '{{ remote_jdk_path }}/{{ jdk_name }}'
+    state: present
+
+- name: Java version after rpm installation
+  include: java-check.yml flag=after

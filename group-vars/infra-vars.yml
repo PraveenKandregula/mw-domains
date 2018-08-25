@@ -1,0 +1,17 @@
+oracle_user: 'ec2-user'
+oracle_group: 'ec2-user'
+fmw_version: '1221'
+oracle_base: '/opt/app/fmw{{ fmw_version }}'
+middleware_home: '{{ oracle_base }}/product'
+domains_home: '{{ oracle_base }}/domains'
+applications_home: '{{ oracle_base }}/applications'
+
+#########################################
+jdk_name: 'jdk-8u181-linux-x64.rpm'
+local_sw_path: '/home/user/oracle'
+remote_jdk_path: '{{ oracle_base }}/..'
+
+#########################################
+mw_installer: 'fmw_12.2.1.2.0_infrastructure.jar'
+mw_installer_folder: '{{ oracle_base }}/..'
+
