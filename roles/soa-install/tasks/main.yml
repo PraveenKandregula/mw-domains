@@ -1,0 +1,18 @@
+- name: Copy soa/bpm installer files
+  copy: 
+    src: '{{ local_sw_path }}/{{ soa_installer }}'
+    dest: '{{ mw_installer_folder }}'
+
+- name: Copy soa installer response file
+  template: 
+    src: soa.installer.rsp 
+    dest: '{{ mw_installer_folder }}'
+
+- name: Check if Soa Suite is already intalled
+  stat: 
+    path: '{{ middleware_home }}/soa'
+  register: soa_installation_exists
+
+- name: Run soa software installer
+  command: "java -Xms1024m -Xmx1024m -jar {{ mw_installer_folder }}/{{ soa_installer }} -silent -responseFile {{ mw_installer_folder }}/soa.installer.rsp -invPtrLoc {{ mw_installer_folder }}/oraInst.loc"
+  when: soa_installation_exists.stat.exists == False

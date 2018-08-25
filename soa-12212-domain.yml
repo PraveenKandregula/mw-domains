@@ -20,3 +20,6 @@
 
   - role: fmw-infra
     tags: infra
+
+  - role: soa-install
+    tags: soa-install

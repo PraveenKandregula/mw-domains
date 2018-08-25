@@ -15,3 +15,6 @@ remote_jdk_path: '{{ oracle_base }}/..'
 mw_installer: 'fmw_12.2.1.2.0_infrastructure.jar'
 mw_installer_folder: '{{ oracle_base }}/..'
 
+#########################################
+soa_installer: 'fmw_12.2.1.2.0_soa.jar'
+soa_install_type: 'SOA Suite'
