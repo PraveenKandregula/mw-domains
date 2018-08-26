@@ -18,3 +18,21 @@ mw_installer_folder: '{{ oracle_base }}/..'
 #########################################
 soa_installer: 'fmw_12.2.1.2.0_soa.jar'
 soa_install_type: 'SOA Suite'
+
+#########################################
+dbserver_name: 'mymw.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
+dbserver_port: '1521'
+dbserver_service: 'mymw'
+soa_repo_preffix: 'soatest'
+db_user: praveen
+db_role: Normal
+schema_list:
+- WLS
+- IAU_APPEND
+- IAU_VIEWER
+- IAU
+- OPSS
+- MDS
+- UCSUMS
+- STB
+- SOAINFRA

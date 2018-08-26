@@ -1,0 +1,16 @@
+#- name: Copy response file
+#  template: 
+#    src: rcu.soa.rsp 
+#    dest: '{{ mw_installer_folder }}/'
+
+- name: Copy passwords file
+  template: 
+    src: rcu.passwd.txt 
+    dest: '{{ mw_installer_folder }}/'
+
+- name: Run rcu to create schemas
+  #shell: '{{ middleware_home }}/oracle_common/bin/rcu -silent -responseFile {{ mw_installer_folder }}/rcu.soa.rsp -f < {{ mw_installer_folder }}/rcu.passwd.txt'
+  shell: '{{ middleware_home }}/oracle_common/bin/rcu -silent -createRepository -connectString {{ dbserver_name }}:{{ dbserver_port }}/{{ dbserver_service }} -dbUser {{ db_user }} -dbRole {{ db_role }} -honorOMF -schemaPrefix {{ soa_repo_preffix }} -component {{ item }} -f < {{ mw_installer_folder }}/rcu.passwd.txt'
+  with_items:
+  - "{{ schema_list }}"
+  ignore_errors: yes

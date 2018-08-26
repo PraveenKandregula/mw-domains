@@ -1,0 +1,8 @@
+{{ sysdba_passwd }}
+{{ datasource_password }}
+{{ datasource_password }}
+{{ datasource_password }}
+{{ datasource_password }}
+{{ datasource_password }}
+{{ datasource_password }}
+{{ datasource_password }}

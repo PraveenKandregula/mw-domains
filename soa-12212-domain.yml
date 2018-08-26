@@ -7,6 +7,7 @@
   vars_files:
   - group-vars/linux-wls-vars.yml
   - group-vars/infra-vars.yml
+  - group-vars/secrets.yml
   roles:
   - role: linux-wls
     become_user: root
@@ -23,3 +24,6 @@
 
   - role: soa-install
     tags: soa-install
+
+  - role: rcu
+    tags: rcu
