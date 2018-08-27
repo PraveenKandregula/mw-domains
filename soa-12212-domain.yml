@@ -27,3 +27,7 @@
 
   - role: rcu
     tags: rcu
+    run_once: true
+
+  - role: soa-domain
+    tags: domain
