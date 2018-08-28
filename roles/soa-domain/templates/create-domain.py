@@ -66,7 +66,7 @@ for sr in range(len(jdbcsrcs)):
 updateDomain()
 print 'JDBC has been configured'
 
-print '\n\nAdding machines to domain...\n'
+print '\n\nAdding machines to domain'
 try:
     servers={{ domain_hosts }}
     #readDomain(domain_configuration_home)
@@ -88,26 +88,29 @@ try:
     cmo.setNodeManagerPasswordEncrypted('{{ weblogic_admin_pass }}')
     set('CrossDomainSecurityEnabled',true)
     updateDomain()
-    print '\nAdded machines to domain'
+    print 'Added machines to domain\n\n'
 except Exception,e:
     print str(e)
     dumpStack()
-    print 'Failed at adding machine to domain'
+    print 'Failed at adding machine to domain\n\n'
 
 print 'Adding cluster to domain'
 cd('/')
 create(cluster, 'Cluster')
 updateDomain()
+print 'Added cluster\n\n'
 
 print 'Assigning admin server to a machine'
 cd('/')
 cd('Server/' + admin_server['name'] )
 set('Machine', str(admin_server['machine']))
+print 'Assigned admin server\n\n'
 
 print 'Creating managed servers'
 for m in managed_servers : 
     cd('/')
-    delete('soa_server1','Server')
+    if m['name'] == "SOA_MS1" :
+        delete('soa_server1','Server')
     create(m['name'],'Server')
     cd('/Servers/' + m['name'])
     cmo.setListenAddress(m['machine'])
@@ -117,6 +120,7 @@ for m in managed_servers :
     cd('/')
     assign('Server',m['name'],'Cluster',cluster)
     print 'Created ' + m['name']
-    updateDomain()
 
+updateDomain()
+print 'Added all managed servers'
 closeDomain()

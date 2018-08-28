@@ -1,4 +1,4 @@
-- name: Copy soa/bpm installer files
+- name: Copy soa installer files
   copy: 
     src: '{{ local_sw_path }}/{{ soa_installer }}'
     dest: '{{ mw_installer_folder }}'

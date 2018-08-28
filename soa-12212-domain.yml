@@ -32,10 +32,9 @@
     run_once: true
 
   - role: soa-domain
-    when: admin
-    tags: domain    
+    when: admin == "true"
+    tags: admin    
   
   - role: soa-managed
-    when: admin is undefined
+    when: admin == "false"
     tags: managed
-   
