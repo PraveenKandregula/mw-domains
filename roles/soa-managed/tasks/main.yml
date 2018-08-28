@@ -1,0 +1,6 @@
+- name: Copying packed domain to managed nodes
+  copy: src={{ local_sw_path }}/{{ domain_name }}.jar dest={{ oracle_base }}
+
+- name: Running unpack on managed nodes
+  shell: "{{ middleware_home }}/oracle_common/common/bin/unpack.sh -domain={{ domains_home }}/{{ domain_name }} -template={{ oracle_base }}/{{ domain_name }}.jar -app_dir={{ domains_home }}/{{ domain_name }}/applications -log=/tmp/unpack.log -log_priority=debug"
+

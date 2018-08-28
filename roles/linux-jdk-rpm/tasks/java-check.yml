@@ -1,6 +1,7 @@
 - name: 'Java version {{ flag }} rpm installation'
   shell: command -v java && java -version
   register: jversion
+  ignore_errors: true
 
 - debug: var='{{ item }}'
   with_items:

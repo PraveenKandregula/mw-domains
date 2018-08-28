@@ -10,11 +10,13 @@
   - group-vars/secrets.yml
   roles:
   - role: linux-wls
+    become: true
     become_user: root
     become_method: sudo
     tags: linux
 
   - role: linux-jdk-rpm
+    become: true
     become_user: root
     become_method: sudo 
     tags: jdk
@@ -30,4 +32,10 @@
     run_once: true
 
   - role: soa-domain
-    tags: domain
+    when: admin
+    tags: domain    
+  
+  - role: soa-managed
+    when: admin is undefined
+    tags: managed
+   

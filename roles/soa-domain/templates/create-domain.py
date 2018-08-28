@@ -15,80 +15,108 @@ middleware_home = '{{ middleware_home }}'
 weblogic_template=middleware_home + '/wlserver/common/templates/wls/wls.jar'
 soa_template=middleware_home + '/soa/common/templates/wls/oracle.soa_template.jar'
 
-readTemplate(weblogic_template)
-setOption('DomainName', domain_name)
-setOption('OverwriteDomain', 'true')
-setOption('JavaHome', java_home)
-setOption('ServerStartMode', 'prod')
+admin_server = {{ admin_server }}
+managed_servers = {{ managed_servers }}
+cluster = "{{ cluster_name }}"
 
+readTemplate(weblogic_template)
+setOption('ServerStartMode', 'prod')
+setOption('DomainName',domain_name)
+setOption('OverwriteDomain','true')
+
+print 'Configuring Admin server...'
+cd('/Servers/AdminServer')
+create('AdminServer','SSL')
+cd('SSL/AdminServer')
+set('Enabled', 'False')
+set('HostNameVerificationIgnored', 'True')
 cd('/Security/base_domain/User/weblogic')
 cmo.setName('{{ weblogic_admin }}')
 cmo.setUserPassword('{{ weblogic_admin_pass }}')
-cd('/')
-
 writeDomain(domain_configuration_home)
 closeTemplate()
+print 'Admin server has been configured\n'
 
 readDomain(domain_configuration_home)
 addTemplate(soa_template)
 setOption('AppDir', domain_application_home)
 
-jdbcsystemresources = cmo.getJDBCSystemResources()
-for jdbcsystemresource in jdbcsystemresources:
-    cd ('/JDBCSystemResource/' + jdbcsystemresource.getName() + '/JdbcResource/' + jdbcsystemresource.getName() + '/JDBCConnectionPoolParams/NO_NAME_0')
-    cmo.setInitialCapacity(1)
-    cmo.setMaxCapacity(15)
-    cmo.setMinCapacity(1)
-    cmo.setStatementCacheSize(0)
-    cmo.setTestConnectionsOnReserve(java.lang.Boolean('false'))
-    cmo.setTestTableName(data_source_test)
-    cmo.setConnectionCreationRetryFrequencySeconds(30)
-    cd ('/JDBCSystemResource/' + jdbcsystemresource.getName() + '/JdbcResource/' + jdbcsystemresource.getName() + '/JDBCDriverParams/NO_NAME_0')
-    cmo.setUrl(data_source_url)
-    cmo.setPasswordEncrypted('{{ datasource_password }}')
-   
-    cd ('/JDBCSystemResource/' + jdbcsystemresource.getName() + '/JdbcResource/' + jdbcsystemresource.getName() + '/JDBCDriverParams/NO_NAME_0/Properties/NO_NAME_0/Property/user')
-    cmo.setValue(cmo.getValue().replace('DEV',data_source_user_prefix))
-    cd('/')
+#JDBC
+print 'connection string ' + data_source_url
+cd('/')
+print 'Configuring JDBC...'
+jdbcsrcs=cmo.getJDBCSystemResources()
+cd('/JDBCSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource/JDBCDriverParams/NO_NAME_0')
+set('URL',data_source_url)
+set('PasswordEncrypted','{{ datasource_password }}')
+cd('Properties/NO_NAME_0/Property/user')
+set('Value',data_source_user_prefix + '_STB')
+getDatabaseDefaults()
 
-for server in {{ domain_hosts }} :
-    create(server,'UnixMachine')
-    cd('/UnixMachine/' + server)
-    create(server,'NodeManager')
-    cd('NodeManager/' + server)
-    cmo.setNMType('SSL')
-    cmo.setListenAddress(server)
-    cmo.setListenPort({{ node_manager_listen_port }})
-    cd("/SecurityConfiguration/" + domain_name)
+for sr in range(len(jdbcsrcs)):
+    s = jdbcsrcs[sr]
+    cd('/')
+    print 'Changing to XA for '+s.getName()
+    cd('/JDBCSystemResource/'+s.getName()+'/JdbcResource/'+s.getName()+'/JDBCDriverParams/NO_NAME_0')
+    set('DriverName','oracle.jdbc.xa.client.OracleXADataSource')
+    set('UseXADataSourceInterface','True')
+    cd('/JDBCSystemResource/'+s.getName()+'/JdbcResource/'+s.getName()+'/JDBCDataSourceParams/NO_NAME_0')
+    set('GlobalTransactionsProtocol','TwoPhaseCommit')
+
+updateDomain()
+print 'JDBC has been configured'
+
+print '\n\nAdding machines to domain...\n'
+try:
+    servers={{ domain_hosts }}
+    #readDomain(domain_configuration_home)
+    for i in servers :
+        cd('/')
+        #cmo.createUnixMachine(i)
+        create(i,'UnixMachine')
+        cd('/UnixMachines/'+i)
+        nmgr = create(i,'NodeManager')
+        nmgr.setNMType('Plain')
+        nmgr.setListenAddress(i)
+        nmgr.setListenPort(int('{{ node_manager_listen_port }}'))
+        nmgr.setDebugEnabled(false)
+        print 'Added machine:' + i + ' to domain'
+	updateDomain()
+    setServerGroups('AdminServer',["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"])
+    cd('/SecurityConfiguration/' + domain_name)
     cmo.setNodeManagerUsername('{{ weblogic_admin }}')
     cmo.setNodeManagerPasswordEncrypted('{{ weblogic_admin_pass }}')
-    cd('/')
+    set('CrossDomainSecurityEnabled',true)
+    updateDomain()
+    print '\nAdded machines to domain'
+except Exception,e:
+    print str(e)
+    dumpStack()
+    print 'Failed at adding machine to domain'
 
-admin_server = {{ admin_server }}
-managed_servers = {{ managed_servers }}
-cluster = {{ cluster_name }} 
-cd('Server/' + admin_server['name'] )
-set('Machine', str(admin_server['machine']))
-#cmo.setHostnameVerifier(None)
-print ('\nCreate '+cluster)
+print 'Adding cluster to domain'
 cd('/')
 create(cluster, 'Cluster')
 updateDomain()
-closeDomain()
 
-readDomain(domain_configuration_home)
+print 'Assigning admin server to a machine'
 cd('/')
+cd('Server/' + admin_server['name'] )
+set('Machine', str(admin_server['machine']))
 
+print 'Creating managed servers'
 for m in managed_servers : 
-    cmo.createServer(m['name'])
+    cd('/')
+    delete('soa_server1','Server')
+    create(m['name'],'Server')
     cd('/Servers/' + m['name'])
     cmo.setListenAddress(m['machine'])
-    cmo.setListenPort(m['port'])
+    cmo.setListenPort(int(m['port']))
     set('Machine',m['machine'])
     setServerGroups(m['name'], ['SOA-MGD-SVRS'])
     cd('/')
-    assign('Server',newSrvName,'Cluster',cluster)
-    cd('/')
+    assign('Server',m['name'],'Cluster',cluster)
+    print 'Created ' + m['name']
+    updateDomain()
 
-updateDomain()
 closeDomain()

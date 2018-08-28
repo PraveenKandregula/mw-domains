@@ -19,3 +19,15 @@
   lineinfile: 
     dest: '/home/{{ oracle_user }}/.bashrc' 
     line: 'export ORACLE_HOME={{ middleware_home }}'
+
+- name: Running pack on Admin node
+  shell: "{{ middleware_home }}/oracle_common/common/bin/pack.sh -domain={{ domains_home }}/{{ domain_name }} -managed=true -template={{ domains_home }}/{{ domain_name }}/templates/{{ domain_name }}.jar -template_name={{ domain_name }} -log=/tmp/pack.log -log_priority=debug"
+  
+- name: Fetching packed domain from admin node
+  fetch: src={{ domains_home }}/{{ domain_name }}/templates/{{ domain_name }}.jar dest={{ local_sw_path }}/ flat=yes
+    
+- name: Create security folder for admin
+  file: path={{ domains_home }}/{{ domain_name }}/servers/AdminServer/security state=directory
+  
+- name: Copying boot identity for admin
+  template: src=boot.properties dest={{ domains_home }}/{{ domain_name }}/servers/AdminServer/security mode=554
