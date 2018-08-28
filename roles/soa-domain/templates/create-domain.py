@@ -109,18 +109,22 @@ print 'Assigned admin server\n\n'
 print 'Creating managed servers'
 for m in managed_servers : 
     cd('/')
+    print 'Creating ' + m['name']
     if m['name'] == "SOA_MS1" :
-        delete('soa_server1','Server')
-    create(m['name'],'Server')
-    cd('/Servers/' + m['name'])
+        #delete('soa_server1','Server')
+        cd('/Server/soa_server1')
+        cmo.setName('SOA_MS1')
+    else :
+        create(m['name'],'Server')
+        cd('/Servers/' + m['name'])
     cmo.setListenAddress(m['machine'])
     cmo.setListenPort(int(m['port']))
     set('Machine',m['machine'])
     setServerGroups(m['name'], ['SOA-MGD-SVRS'])
     cd('/')
     assign('Server',m['name'],'Cluster',cluster)
+    updateDomain()
     print 'Created ' + m['name']
 
-updateDomain()
 print 'Added all managed servers'
 closeDomain()
