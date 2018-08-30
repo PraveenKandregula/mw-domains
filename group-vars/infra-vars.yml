@@ -20,10 +20,15 @@ soa_installer: 'fmw_12.2.1.2.0_soa.jar'
 soa_install_type: 'SOA Suite'
 
 #########################################
-dbserver_name: 'mymw.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
+aia_installer: 'comms_home_installer_generic.jar'
+aia_path: '{{ middleware_home }}/aia'
+
+#########################################
+#dbserver_name: 'mymw.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
+dbserver_name: 'mymw12.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
 dbserver_port: '1521'
-dbserver_service: 'mymw'
-soa_repo_preffix: 'SOAM'
+dbserver_service: 'mymw12'
+soa_repo_preffix: 'SOA1'
 db_user: praveen
 db_role: Normal
 schema_list:
@@ -34,20 +39,20 @@ schema_list:
 - OPSS
 - MDS
 - UCSUMS
-- STB
+#- STB
 - SOAINFRA
 
 #########################################
-domain_hosts: '("34.229.164.110","54.146.16.161")'
+domain_hosts: '("54.237.215.34","54.144.229.139")'
 domain_name: 'soa_domain'
 weblogic_home: '{{ middleware_home }}/wlserver'
 node_manager_listen_port: '5556'
 #admin_server:
 #  AdminServer:
 #    machine: '{{ inventory_hostname }}'
-admin_server: {name: 'AdminServer', machine: '34.229.164.110'}
+admin_server: {name: 'AdminServer', machine: '54.237.215.34'}
 managed_servers: [
-                  {name: 'SOA_MS1', machine: '34.229.164.110', port: '8001'},
-                  {name: 'SOA_MS2', machine: '54.146.16.161', port: '8001'}
+                  {name: 'SOA_MS1', machine: '54.237.215.34', port: '8001'},
+                  {name: 'SOA_MS2', machine: '54.144.229.139', port: '8001'}
                  ]
 cluster_name: 'SOA_Cluster'

@@ -14,6 +14,7 @@ middleware_home = '{{ middleware_home }}'
 
 weblogic_template=middleware_home + '/wlserver/common/templates/wls/wls.jar'
 soa_template=middleware_home + '/soa/common/templates/wls/oracle.soa_template.jar'
+aia_template=middleware_home + '/soa/common/templates/wls/oracle.soa.fp_template.jar'
 
 admin_server = {{ admin_server }}
 managed_servers = {{ managed_servers }}
@@ -75,11 +76,11 @@ try:
         #cmo.createUnixMachine(i)
         create(i,'UnixMachine')
         cd('/UnixMachines/'+i)
-        nmgr = create(i,'NodeManager')
-        nmgr.setNMType('Plain')
-        nmgr.setListenAddress(i)
-        nmgr.setListenPort(int('{{ node_manager_listen_port }}'))
-        nmgr.setDebugEnabled(false)
+        #nmgr = create(i,'NodeManager')
+        #nmgr.setNMType('Plain')
+        #nmgr.setListenAddress(i)
+        #nmgr.setListenPort(int('{{ node_manager_listen_port }}'))
+        #nmgr.setDebugEnabled(false)
         print 'Added machine:' + i + ' to domain'
 	updateDomain()
     setServerGroups('AdminServer',["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"])
@@ -127,4 +128,10 @@ for m in managed_servers :
     print 'Created ' + m['name']
 
 print 'Added all managed servers'
+
+print 'Adding aia template'
+addTemplate(aia_template)
+updateDomain()
+print 'Added aia template'
+
 closeDomain()

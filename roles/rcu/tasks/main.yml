@@ -19,4 +19,4 @@
   shell: '{{ middleware_home }}/oracle_common/bin/rcu -silent -createRepository -connectString {{ dbserver_name }}:{{ dbserver_port }}/{{ dbserver_service }} -dbUser {{ db_user }} -dbRole {{ db_role }} -honorOMF -schemaPrefix {{ soa_repo_preffix }} -component {{ item }} -f < {{ mw_installer_folder }}/rcu.passwd.txt'
   with_items:
   - "{{ schema_list }}"
-  ignore_errors: yes
+  #ignore_errors: yes

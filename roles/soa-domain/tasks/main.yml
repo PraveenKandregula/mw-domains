@@ -9,7 +9,6 @@
     dest: '{{ mw_installer_folder }}'
     owner: '{{ oracle_user }}' 
     group: '{{ oracle_group }}'
-  tags: template
   
 - name: Execute create domain script
   shell: "{{ weblogic_home }}/common/bin/wlst.sh {{ mw_installer_folder }}/create-domain.py"
@@ -31,3 +30,6 @@
   
 - name: Copying boot identity for admin
   template: src=boot.properties dest={{ domains_home }}/{{ domain_name }}/servers/AdminServer/security mode=554
+
+#- name: Start admin server
+#  shell: "cd {{ domains_home }}/{{ domain_name }}/bin && nohup ./startWeblogic.sh </dev/null >/dev/null 2>&1 &"

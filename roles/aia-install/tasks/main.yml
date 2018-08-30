@@ -1,0 +1,26 @@
+- name: Check if aia folder exists
+  stat: 
+    path: '{{ aia_path }}'
+  register: aia_exists
+
+- name: "Fail if {{ aia_path }} exists"
+  fail:
+    msg: "{{ aia_path }} exists"
+  when: aia_exists.stat.exists == True
+
+- name: Copy aia installer and response file
+  copy: 
+    src: '{{ local_sw_path }}/{{ aia_installer }}'
+    dest: '{{ mw_installer_folder }}'
+
+- name: Copy aia response file
+  template:
+    src: aia-install.rsp
+    dest: '{{ mw_installer_folder }}'
+
+- name: Install aia
+  command: "java -Xms1024m -Xmx1024m -jar {{ mw_installer_folder }}/{{ aia_installer }} -silent -responseFile {{ mw_installer_folder }}/aia-install.rsp -invPtrLoc {{ mw_installer_folder }}/oraInst.loc"
+
+- name: Preparing domain | run SCEApp.sh
+  shell: "{{ middleware_home  }}/comms_home/src/SCEApp/SCEApp.sh {{ middleware_home }}"
+  tags: sce

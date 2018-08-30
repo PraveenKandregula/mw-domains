@@ -8,21 +8,19 @@
     src: '{{ local_sw_path }}/{{ mw_installer }}'
     dest: '{{ mw_installer_folder }}'
   
-- name: Copy file for silent installation
+- name: Copy response file and oraInst for silent installation
   template: 
-    src: silent-weblogic.txt 
+    src: '{{ item }}' 
     dest: '{{ mw_installer_folder }}'
-  
-- name: Copy OraInst.loc
-  template: 
-    src: oraInst.loc 
-    dest: '{{ mw_installer_folder }}'
+  with_items:
+  - silent-weblogic.txt
+  - oraInst.loc
   
 - name: Check if installation is already done
   stat: 
     path: '{{ middleware_home }}/oracle_common'
   register: mw_folder_exists
   
-- name: execute Weblogic installer
+- name: Install infrastructure
   command: "java -Xms1024m -Xmx1024m -jar {{ mw_installer_folder }}/{{ mw_installer }} -silent -responseFile {{ mw_installer_folder }}/silent-weblogic.txt -invPtrLoc {{ mw_installer_folder }}/oraInst.loc"
   when: mw_folder_exists.stat.exists == False

@@ -13,6 +13,6 @@
     path: '{{ middleware_home }}/soa'
   register: soa_installation_exists
 
-- name: Run soa software installer
+- name: Install SOA
   command: "java -Xms1024m -Xmx1024m -jar {{ mw_installer_folder }}/{{ soa_installer }} -silent -responseFile {{ mw_installer_folder }}/soa.installer.rsp -invPtrLoc {{ mw_installer_folder }}/oraInst.loc"
   when: soa_installation_exists.stat.exists == False

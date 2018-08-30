@@ -26,6 +26,9 @@
 
   - role: soa-install
     tags: soa-install
+  
+  - role: aia-install
+    tags: aia-install
 
   - role: rcu
     tags: rcu

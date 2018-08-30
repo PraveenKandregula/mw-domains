@@ -1,7 +1,7 @@
 packages_list:
   - 'binutils'
   - 'compat-libcap1'
-  - 'compat-libstdc++-33.x86_64'
+  #- 'compat-libstdc++-33.x86_64'
   - 'gcc.x86_64'
   - 'gcc-c++.x86_64'
   - 'glibc.x86_64'
@@ -15,6 +15,7 @@ packages_list:
   - 'make'
   - 'sysstat'
   - 'libselinux-python'
+  - 'unzip'
 kernel_params:
         kernel.shmmax: 2147483648
         kernel.shmall: 524288
