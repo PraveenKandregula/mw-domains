@@ -1,7 +1,14 @@
-#- name: Copy response file
-#  template: 
-#    src: rcu.soa.rsp 
-#    dest: '{{ mw_installer_folder }}/'
+- set_fact:
+    components_list: null
+
+- name: Prepare components list
+  set_fact:
+    components_list: "{{ components_list }}-component {{ item }} "
+  with_items: 
+  - "{{ schema_list }}"
+  when: 
+  - 'item != "UCSCC"' 
+  - 'item != "UMS"'
 
 - name: Copy passwords file
   template: 
@@ -9,14 +16,9 @@
     dest: '{{ mw_installer_folder }}/'
 
 - name: Run rcu to drop schemas
-  shell: '{{ middleware_home }}/oracle_common/bin/rcu -silent -dropRepository -connectString {{ dbserver_name }}:{{ dbserver_port }}/{{ dbserver_service }} -dbUser {{ db_user }} -dbRole {{ db_role }} -schemaPrefix {{ soa_repo_preffix }} -component {{ item }} -f < {{ mw_installer_folder }}/rcu.passwd.txt'
-  with_items:
-  - "{{ schema_list }}"
+  shell: '{{ middleware_home }}/oracle_common/bin/rcu -silent -dropRepository -connectString {{ dbserver_name }}:{{ dbserver_port }}/{{ dbserver_service }} -dbUser {{ db_user }} -dbRole {{ db_role }} -schemaPrefix {{ soa_repo_preffix }} {{ components_list }}-f < {{ mw_installer_folder }}/rcu.passwd.txt'
   ignore_errors: yes
 
 - name: Run rcu to create schemas
-  #shell: '{{ middleware_home }}/oracle_common/bin/rcu -silent -responseFile {{ mw_installer_folder }}/rcu.soa.rsp -f < {{ mw_installer_folder }}/rcu.passwd.txt'
-  shell: '{{ middleware_home }}/oracle_common/bin/rcu -silent -createRepository -connectString {{ dbserver_name }}:{{ dbserver_port }}/{{ dbserver_service }} -dbUser {{ db_user }} -dbRole {{ db_role }} -honorOMF -schemaPrefix {{ soa_repo_preffix }} -component {{ item }} -f < {{ mw_installer_folder }}/rcu.passwd.txt'
-  with_items:
-  - "{{ schema_list }}"
+  shell: '{{ middleware_home }}/oracle_common/bin/rcu -silent -createRepository -connectString {{ dbserver_name }}:{{ dbserver_port }}/{{ dbserver_service }} -dbUser {{ db_user }} -dbRole {{ db_role }} -honorOMF -useSamePasswordForAllSchemaUsers true -variables -schemaPrefix {{ soa_repo_preffix }} {{ components_list }}-f < {{ mw_installer_folder }}/rcu.passwd.txt'
   #ignore_errors: yes

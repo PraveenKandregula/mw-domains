@@ -1,3 +1,5 @@
 [soa]
-54.237.215.34 admin=true
-54.144.229.139 admin=false
+#34.207.137.9 admin=true
+#18.212.110.137 admin=false
+172.31.85.197 admin=true
+172.31.92.146 admin=false

@@ -5,13 +5,13 @@
 
 - name: copy create domain python script
   template: 
-    src: create-domain.py 
+    src: create-domain-new.py 
     dest: '{{ mw_installer_folder }}'
     owner: '{{ oracle_user }}' 
     group: '{{ oracle_group }}'
   
 - name: Execute create domain script
-  shell: "{{ weblogic_home }}/common/bin/wlst.sh {{ mw_installer_folder }}/create-domain.py"
+  shell: "{{ weblogic_home }}/common/bin/wlst.sh {{ mw_installer_folder }}/create-domain-new.py"
   when: domain_exists.stat.exists == False
 
 - name: Add Oracle Home environment variables

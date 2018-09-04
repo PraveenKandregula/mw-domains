@@ -18,120 +18,116 @@ aia_template=middleware_home + '/soa/common/templates/wls/oracle.soa.fp_template
 
 admin_server = {{ admin_server }}
 managed_servers = {{ managed_servers }}
-cluster = "{{ cluster_name }}"
+cluster_det = {{ cluster }}
 
-readTemplate(weblogic_template)
-setOption('ServerStartMode', 'prod')
-setOption('DomainName',domain_name)
-setOption('OverwriteDomain','true')
+#Functions here
+def jdbcConfig():
+  print 'Configuring JDBC...'
+  print 'connection string ' + data_source_url
+  cd('/')
+  jdbcsrcs=cmo.getJDBCSystemResources()
+  cd('/JDBCSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource/JDBCDriverParams/NO_NAME_0')
+  set('URL',data_source_url)
+  set('PasswordEncrypted','{{ datasource_password }}')
+  cd('Properties/NO_NAME_0/Property/user')
+  set('Value',data_source_user_prefix + '_STB')
+  getDatabaseDefaults()
 
-print 'Configuring Admin server...'
-cd('/Servers/AdminServer')
-create('AdminServer','SSL')
-cd('SSL/AdminServer')
-set('Enabled', 'False')
-set('HostNameVerificationIgnored', 'True')
-cd('/Security/base_domain/User/weblogic')
-cmo.setName('{{ weblogic_admin }}')
-cmo.setUserPassword('{{ weblogic_admin_pass }}')
-writeDomain(domain_configuration_home)
-closeTemplate()
-print 'Admin server has been configured\n'
-
-readDomain(domain_configuration_home)
-addTemplate(soa_template)
-setOption('AppDir', domain_application_home)
-
-#JDBC
-print 'connection string ' + data_source_url
-cd('/')
-print 'Configuring JDBC...'
-jdbcsrcs=cmo.getJDBCSystemResources()
-cd('/JDBCSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource/JDBCDriverParams/NO_NAME_0')
-set('URL',data_source_url)
-set('PasswordEncrypted','{{ datasource_password }}')
-cd('Properties/NO_NAME_0/Property/user')
-set('Value',data_source_user_prefix + '_STB')
-getDatabaseDefaults()
-
-for sr in range(len(jdbcsrcs)):
+  for sr in range(len(jdbcsrcs)):
     s = jdbcsrcs[sr]
     cd('/')
-    print 'Changing to XA for '+s.getName()
-    cd('/JDBCSystemResource/'+s.getName()+'/JdbcResource/'+s.getName()+'/JDBCDriverParams/NO_NAME_0')
-    set('DriverName','oracle.jdbc.xa.client.OracleXADataSource')
-    set('UseXADataSourceInterface','True')
-    cd('/JDBCSystemResource/'+s.getName()+'/JdbcResource/'+s.getName()+'/JDBCDataSourceParams/NO_NAME_0')
-    set('GlobalTransactionsProtocol','TwoPhaseCommit')
+    if s.getName() in ["EDNDataSource","wlsbjmsrpDataSource","OraSDPMDataSource","SOADataSource","BamDataSource"]:
+      print 'Changing to XA for '+s.getName()
+      cd('/JDBCSystemResource/'+s.getName()+'/JdbcResource/'+s.getName()+'/JDBCDriverParams/NO_NAME_0')
+      set('DriverName','oracle.jdbc.xa.client.OracleXADataSource')
+      set('UseXADataSourceInterface','True')
+      cd('/JDBCSystemResource/'+s.getName()+'/JdbcResource/'+s.getName()+'/JDBCDataSourceParams/NO_NAME_0')
+      set('GlobalTransactionsProtocol','TwoPhaseCommit')
 
-updateDomain()
-print 'JDBC has been configured'
+  updateDomain()
+  print 'JDBC has been configured\n'
 
-print '\n\nAdding machines to domain'
-try:
-    servers={{ domain_hosts }}
-    #readDomain(domain_configuration_home)
-    for i in servers :
-        cd('/')
-        #cmo.createUnixMachine(i)
-        create(i,'UnixMachine')
-        cd('/UnixMachines/'+i)
-        #nmgr = create(i,'NodeManager')
-        #nmgr.setNMType('Plain')
-        #nmgr.setListenAddress(i)
-        #nmgr.setListenPort(int('{{ node_manager_listen_port }}'))
-        #nmgr.setDebugEnabled(false)
-        print 'Added machine:' + i + ' to domain'
-	updateDomain()
-    setServerGroups('AdminServer',["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"])
-    cd('/SecurityConfiguration/' + domain_name)
-    cmo.setNodeManagerUsername('{{ weblogic_admin }}')
-    cmo.setNodeManagerPasswordEncrypted('{{ weblogic_admin_pass }}')
-    set('CrossDomainSecurityEnabled',true)
-    updateDomain()
-    print 'Added machines to domain\n\n'
-except Exception,e:
-    print str(e)
-    dumpStack()
-    print 'Failed at adding machine to domain\n\n'
+def createNodeManager():
+  print 'Configuring Node manager'
+  servers={{ domain_hosts }}
+  for i in servers :
+    cd('/')
+    create(i,'UnixMachine')
+    cd('/UnixMachines/'+i)
+    nmgr = create(i,'NodeManager')
+    nmgr.setListenAddress(i)
+    nmgr.setListenPort(int('{{ node_manager_listen_port }}'))
 
-print 'Adding cluster to domain'
-cd('/')
-create(cluster, 'Cluster')
-updateDomain()
-print 'Added cluster\n\n'
-
-print 'Assigning admin server to a machine'
-cd('/')
-cd('Server/' + admin_server['name'] )
-set('Machine', str(admin_server['machine']))
-print 'Assigned admin server\n\n'
-
-print 'Creating managed servers'
-for m in managed_servers : 
+  print'Node managers have been added\n'
+  setServerGroups('AdminServer',["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"])
+  cd('/SecurityConfiguration/' + domain_name)
+  cmo.setNodeManagerUsername('{{ weblogic_admin }}')
+  cmo.setNodeManagerPasswordEncrypted('{{ weblogic_admin_pass }}')
+  set('CrossDomainSecurityEnabled',true)
+  updateDomain()
+  
+def addManagedServers():
+  print 'Creating cluster'
+  cd('/')
+  cluster1 = create(cluster_det['name'], 'Cluster')
+  cluster1.setClusterMessagingMode('unicast')
+  cluster1.setFrontendHost(cluster_det['lb_url'])
+  cluster1.setFrontendHTTPPort(int(cluster_det['port']))
+  cluster1.setClusterAddress(cluster_det['lb_url'])
+  cluster1.setTxnAffinityEnabled(true)
+  print 'Creating managed servers'
+  for m in managed_servers :
     cd('/')
     print 'Creating ' + m['name']
     if m['name'] == "SOA_MS1" :
-        #delete('soa_server1','Server')
-        cd('/Server/soa_server1')
-        cmo.setName('SOA_MS1')
+      cd('/Server/soa_server1')
+      cmo.setName('SOA_MS1')
     else :
-        create(m['name'],'Server')
-        cd('/Servers/' + m['name'])
-    cmo.setListenAddress(m['machine'])
-    cmo.setListenPort(int(m['port']))
+      create(m['name'],'Server')
+      cd('/Servers/'+m['name'])
+    set('ListenAddress', (m['machine']))
+    set('ListenPort', (int(m['port'])))
     set('Machine',m['machine'])
     setServerGroups(m['name'], ['SOA-MGD-SVRS'])
-    cd('/')
-    assign('Server',m['name'],'Cluster',cluster)
+    assign('Server',m['name'],'Cluster',cluster_det['name'])
     updateDomain()
-    print 'Created ' + m['name']
+    print 'Created ' + m['name'] + ' on ' + m['machine']
 
-print 'Added all managed servers'
+  print 'Added all managed servers'
 
-print 'Adding aia template'
-addTemplate(aia_template)
-updateDomain()
-print 'Added aia template'
+def createDomain():
+  readTemplate(weblogic_template)
+  setOption('ServerStartMode', 'prod')
+  setOption('DomainName',domain_name)
+  setOption('OverwriteDomain','true')
 
-closeDomain()
+  print '\nConfiguring Admin server...'
+  cd('/Servers/AdminServer')
+  set('Name','AdminServer')
+  set('ListenAddress',admin_server['machine'])
+  create('AdminServer','SSL')
+  cd('SSL/AdminServer')
+  set('Enabled', 'False')
+  set('HostNameVerificationIgnored', 'True')
+  cd('/Security/base_domain/User/weblogic')
+  cmo.setName('{{ weblogic_admin }}')
+  cmo.setUserPassword('{{ weblogic_admin_pass }}')
+  writeDomain(domain_configuration_home)
+  closeTemplate()
+  print 'Admin server has been configured\n'
+
+  readDomain(domain_configuration_home)
+  addTemplate(soa_template)
+  addTemplate(aia_template)
+  setServerGroups('AdminServer',["WSM-CACHE-SVR" , "WSMPM-MAN-SVR" , "JRF-MAN-SVR"])
+  cd('/SecurityConfiguration/' + domain_name)
+  setOption('AppDir', domain_application_home)
+  
+  jdbcConfig()
+  #createNodeManager()
+  addManagedServers()
+  updateDomain()
+  closeDomain()
+
+#Execution starts here
+createDomain()

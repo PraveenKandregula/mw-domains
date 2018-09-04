@@ -23,4 +23,3 @@
 
 - name: Preparing domain | run SCEApp.sh
   shell: "{{ middleware_home  }}/comms_home/src/SCEApp/SCEApp.sh {{ middleware_home }}"
-  tags: sce

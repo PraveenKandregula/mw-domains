@@ -1,14 +1,14 @@
 oracle_user: 'ec2-user'
 oracle_group: 'ec2-user'
 fmw_version: '1221'
-oracle_base: '/opt/app/fmw{{ fmw_version }}'
+oracle_base: '/opt/app/fmw'
 middleware_home: '{{ oracle_base }}/product'
 domains_home: '{{ oracle_base }}/domains'
 applications_home: '{{ oracle_base }}/applications'
 
 #########################################
 jdk_name: 'jdk-8u181-linux-x64.rpm'
-local_sw_path: '/home/user/oracle'
+local_sw_path: '/home/ec2-user/oracle'
 remote_jdk_path: '{{ oracle_base }}/..'
 
 #########################################
@@ -25,10 +25,10 @@ aia_path: '{{ middleware_home }}/aia'
 
 #########################################
 #dbserver_name: 'mymw.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
-dbserver_name: 'mymw12.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
+dbserver_name: 'mymw.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
 dbserver_port: '1521'
-dbserver_service: 'mymw12'
-soa_repo_preffix: 'SOA1'
+dbserver_service: 'mymw'
+soa_repo_preffix: 'SOAPRAVEEN'
 db_user: praveen
 db_role: Normal
 schema_list:
@@ -39,20 +39,23 @@ schema_list:
 - OPSS
 - MDS
 - UCSUMS
+- UCSCC
+- UMS
 #- STB
 - SOAINFRA
 
 #########################################
-domain_hosts: '("54.237.215.34","54.144.229.139")'
-domain_name: 'soa_domain'
+domain_hosts: '("172.31.85.197","172.31.92.146")'
+domain_name: 'soa12_domain'
 weblogic_home: '{{ middleware_home }}/wlserver'
 node_manager_listen_port: '5556'
 #admin_server:
 #  AdminServer:
 #    machine: '{{ inventory_hostname }}'
-admin_server: {name: 'AdminServer', machine: '54.237.215.34'}
+admin_server: {name: 'AdminServer', machine: 'Machine-1', host: '172.31.85.197'}
 managed_servers: [
-                  {name: 'SOA_MS1', machine: '54.237.215.34', port: '8001'},
-                  {name: 'SOA_MS2', machine: '54.144.229.139', port: '8001'}
+                  {name: 'SOA_MS1', machine: 'Machine-1', port: '8001', host: '172.31.85.197'},
+                  {name: 'SOA_MS2', machine: 'Machine-2', port: '8001', host: '172.31.92.146'}
                  ]
 cluster_name: 'SOA_Cluster'
+cluster: {name: 'SOA_Cluster', port: '9000', lb_url: '172.31.92.146'}

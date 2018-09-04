@@ -4,10 +4,13 @@
   remote_user: "{{ oracle_user }}"
   #become: true
   gather_facts: no 
+  any_errors_fatal: true
+
   vars_files:
   - group-vars/linux-wls-vars.yml
   - group-vars/infra-vars.yml
   - group-vars/secrets.yml
+
   roles:
   - role: linux-wls
     become: true
