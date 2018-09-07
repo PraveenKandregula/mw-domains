@@ -1,0 +1,23 @@
+- name: Start nodemanager
+  shell: 'cd {{ domains_home }}/{{ domain_name }}/bin && nohup ./startNodeManager.sh > nohup.out 2>&1 &'
+  
+- name: Start Admin
+  shell: 'cd {{ domains_home }}/{{ domain_name }}/bin && nohup ./startWebLogic.sh > nohup.out 2>&1 &'
+  when: admin == "true"
+
+- name: Wait for admin server to start
+  wait_for:
+    host: '{{ inventory_hostname }}'
+    port: 7001
+    connect_timeout: 600
+    delay: 10
+    state: started
+  when: admin == "true"
+
+- name: Copy managed servers startup script
+  template: 
+    src: startMS.py
+    dest: '{{ remote_jdk_path }}'
+
+- name: Start managed servers
+  shell: '{{ middleware_home }}/oracle_common/common/bin/wlst.sh {{ remote_jdk_path }}/startMS.py'

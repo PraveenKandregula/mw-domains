@@ -44,3 +44,6 @@
   - role: soa-managed
     when: admin == "false"
     tags: managed
+
+  - role: startup
+    tags: startup
