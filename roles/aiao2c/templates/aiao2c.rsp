@@ -1,0 +1,90 @@
+#Response file
+#Wed Sep 12 13:59:55 UTC 2018
+
+#Generic
+MDMProductBRM=false
+PDC=false
+AABC_PIP=false
+MDMProductDS=false
+MDMProductSiebel=false
+MDMProductBase=false
+
+#Domain
+DOMAIN_LOCATION={{ domains_home }}/{{ domain_name }}
+SOA_WL_ADMIN_PORT=7001
+SOA_WL_DOMAIN_NAME={{ domain_name }}
+SOA_WL_ADMIN_USER={{ weblogic_admin }}
+SOA_WL_MS_NAME={{ cluster.name }}
+SOA_WL_MS_HOST={{ cluster.lb_url }}
+SOA_WL_MS_PORT={{ cluster.port }}
+SOA_WL_ADMIN_PASSWORD={{ weblogic_admin_pass }}
+SOA_WL_ADMIN_HOST={{ admin_server.host }}
+SHARED_LOCATION=
+
+#DB
+SOA_DB_HOST_NAME={{ dbserver_name }}
+SOA_DB_SYS_ROLE={{ db_role }}
+SOA_DB_SYS_USER={{ db_user }}
+SOA_DB_PASSWORD={{ datasource_password }}
+SOA_DB_PORT={{ dbserver_port }}
+SOA_DB_SYS_PASSWORD={{ sysdba_passwd }}
+SOA_DB_USER={{ db_user }}
+SOA_SID={{ dbserver_service }}
+
+#XREF
+XREF_TEMP_TABLESPACE=
+XREF_SCHEMA_PASSWORD={{ datasource_password }}
+SPLIT_XREF=true
+XREF_DEFAULT_TABLESPACE=
+XREF_SCHEMA_NAME={{ domain_name }}_COMMS_XREF
+XREF_SCHEMA_SYS_ROLE={{ db_role }}
+XREF_SCHEMA_SYS_USER={{ db_user }}
+XREF_SCHEMA_SYS_PASSWORD={{ sysdba_passwd }}
+
+#BRM
+Order2Cash_brm=true
+BRM_VERSION={{ BRM_VER }}
+BRM_PRIMARY_CM_HOST={{ BRMAPP.cmhost }}
+BRM_PRIMARY_CM_PORT={{ BRMAPP.port }}
+BRM_AQ_PSWD={{ BRMAQ.password }}
+BRM_AQ_USER={{ BRMAQ.user }}
+BRM_AQ_DB_SID={{ BRMAQ.sid }}
+BRM_AQ_QUEUE={{ BRMAQ.aqname }}
+BRM_DB_PORT={{ BRMDB.port }}
+BRM_DB_HOST={{ BRMDB.host }}
+
+#Siebel
+Order2Cash_Siebel=true
+SBL_LANG=enu
+SBL_PROTOCOL={{ SBL_PROTOCOL }}
+SBL_VERSION={{ SBL_VER }}
+SBL_HOST={{ SBLAPP.apphost }}
+SBL_ENTERPRISE_SERVER_NAME={{ SBLAPP.entserver}}
+SBL_PORT={{ SBLAPP.port }}
+SBL_EAI_USER={{ SBLAPP.eaiuser }}
+SBL_EAI_PSWD={{ SBLAPP.eaipassword }}
+SBL_DB_HOST={{ SBLDB.host }}
+SBL_DB_PORT={{ SBLDB.port }}
+SBL_DB_SID={{ SBLDB.sid }}
+SBL_DB_USER={{ SBLDB.user }}
+SBL_DB_PSWD={{ SBLDB.pwd }}
+
+#SPM
+SPM_PROXY_PORT=
+SPM_PROXY_HOST=
+
+#OSM
+Order2Cash_osm=true
+OSM_VERSION={{ OSM_VER }}
+OSM_CFS_ADMIN_USER={{ OSMCFS.admin_user }}
+OSM_CFS_ADMIN_PSWD={{ OSMCFS.admin_pwd}}
+OSM_CFS_WL_JMS_QUEUE_ACCESS_USER={{ OSMCFS.jms_usr }}
+OSM_CFS_WL_JMS_QUEUE_ACCESS_PSWD={{ OSMCFS.jms_pwd }}
+OSM_CFS_WL_JMS_QUEUE_ACCESS_PORT={{ OSMCFS.jms_port }}
+OSM_CFS_WL_JMS_QUEUE_ACCESS_HOST={{ OSMCFS.jms_host }}
+OSM_PROV_ADMIN_USER={{ OSMPROV.admin_user }}
+OSM_PROV_ADMIN_PSWD={{ OSMPROV.admin_pwd }}
+OSM_PROV_WL_JMS_QUEUE_ACCESS_HOST={{ OSMPROV.jms_host }}
+OSM_PROV_WL_JMS_QUEUE_ACCESS_PORT={{ OSMPROV.jms_port }}
+OSM_PROV_WL_JMS_QUEUE_ACCESS_USER={{ OSMPROV.jms_usr }}
+OSM_PROV_WL_JMS_QUEUE_ACCESS_PSWD={{ OSMPROV.jms_pwd }}

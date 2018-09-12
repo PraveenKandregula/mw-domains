@@ -24,7 +24,7 @@ SOFTWARE_UPDATES_PROXY_USER=
 SOFTWARE_UPDATES_PROXY_PASSWORD=<SECURE VALUE>
 
 #The oracle home location. This can be an existing Oracle Home or a new Oracle Home
-ORACLE_HOME={{ middleware_home }}
+ORACLE_HOME={{ soa_home }}
 
 #Set this variable value to the Installation Type selected. e.g. SOA Suite, BPM.
 INSTALL_TYPE={{ soa_install_type }}

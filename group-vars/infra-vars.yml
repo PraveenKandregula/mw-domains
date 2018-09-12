@@ -17,18 +17,19 @@ mw_installer_folder: '{{ oracle_base }}/..'
 
 #########################################
 soa_installer: 'fmw_12.2.1.2.0_soa.jar'
+soa_home: '{{ middleware_home }}'
 soa_install_type: 'SOA Suite'
 
 #########################################
 aia_installer: 'comms_home_installer_generic.jar'
-aia_path: '{{ middleware_home }}/aia'
+aia_home: '{{ middleware_home }}/ORACLE_AIA'
 
 #########################################
 #dbserver_name: 'mymw.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
 dbserver_name: 'mymw.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
 dbserver_port: '1521'
 dbserver_service: 'mymw'
-soa_repo_preffix: 'SOAPRAVEEN'
+soa_repo_preffix: 'SOAPR'
 db_user: praveen
 db_role: Normal
 schema_list:
@@ -59,3 +60,20 @@ managed_servers: [
                  ]
 cluster_name: 'SOA_Cluster'
 cluster: {name: 'SOA_Cluster', port: '9000', lb_url: '172.31.92.146'}
+
+#########################################
+BRM_VER: 7.5
+BRMAPP: {cmhost: 'brmcmhost', port: '12900'}
+BRMDB: {host: 'brmdbhost', port: '1521'}
+BRMAQ: {user: 'brmaquser', password: 'brmaqpwd', aqname: 'brmaq', sid: 'mymw'}
+
+#########################################
+SBL_VER: 8.1.1.6
+SBL_PROTOCOL: 'http'
+SBLAPP: {entserver: 'sblenthost', apphost: 'sblapphost', port: '9000', eaiuser: 'sbleaiuser', eaipassword: 'sbleaipwd'}
+SBLDB: {host: 'sbldbhost', port: '1521', sid: 'sblsid', user: 'sbldbuser', pwd: 'sbldbpwd'}
+
+#########################################
+OSM_VER: 8.5
+OSMCFS: {admin_user: 'osmcfsusr', admin_pwd: 'osmcfspwd', jms_usr: 'cfsjmsqueueaccessusr', jms_pwd: 'cfsjmsqueueaccesspwd', jms_port: '8001', jms_host: 'cfsosmjmshost'}
+OSMPROV: {admin_user: 'osmprovusr', admin_pwd: 'osmprovpwd', jms_usr: 'provjmsqueueaccessusr', jms_pwd: 'provjmsqueueaccesspwd', jms_port: '8001', jms_host: 'provosmjmshost'}

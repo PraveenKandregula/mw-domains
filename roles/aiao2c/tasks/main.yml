@@ -1,0 +1,7 @@
+- name: Copy O2C response file
+  template:
+    src: aiao2c.rsp
+    dest: '{{ mw_installer_folder }}'
+
+- name: Run config
+  shell: "source {{ domains_home }}/{{ domain_name }}/soa/aia/bin/aiaenv.sh && cd {{ aia_home }}/comms_home/config/ && sh run_config.sh -mode=silent -responseFile={{ mw_installer_folder }}/aiao2c.rsp -noValidations"

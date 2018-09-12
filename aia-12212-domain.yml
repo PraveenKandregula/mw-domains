@@ -45,5 +45,8 @@
     when: admin == "false"
     tags: managed
 
+  - role: aiao2c
+    tags: o2c
+
   - role: startup
     tags: startup
