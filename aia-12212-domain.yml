@@ -45,8 +45,12 @@
     when: admin == "false"
     tags: managed
 
-  - role: aiao2c
-    tags: o2c
-
   - role: startup
     tags: startup
+  
+  - role: stop
+    tags: stop
+   
+  # Below role is causing issues
+  - role: aiao2c
+    tags: o2c

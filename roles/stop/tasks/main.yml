@@ -1,0 +1,14 @@
+- name: Copy managed servers stop script
+  template:
+    src: stopMS.py
+    dest: '{{ remote_jdk_path }}'
+
+- name: Stop managed servers
+  shell: '{{ middleware_home }}/oracle_common/common/bin/wlst.sh {{ remote_jdk_path }}/stopMS.py'
+
+- name: Stop Admin server
+  shell: 'cd {{ domains_home }}/{{ domain_name }}/bin && sh stopWebLogic.sh'
+  when: admin == "true"
+
+- name: Stop nodemanagers
+  shell: 'sh {{ domains_home }}/{{ domain_name }}/bin/stopNodeManager.sh'
