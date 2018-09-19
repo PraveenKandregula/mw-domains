@@ -1,0 +1,43 @@
+- name: check if domain folder exists
+  stat: 
+    path: '{{ domains_home }}/{{ domain_name }}'
+  register: domain_exists
+
+- name: copy create domain python script
+  template: 
+    src: create-domain-new.py 
+    dest: '{{ mw_installer_folder }}'
+    owner: '{{ oracle_user }}' 
+    group: '{{ oracle_group }}'
+  
+- name: Execute create domain script
+  shell: "{{ weblogic_home }}/common/bin/wlst.sh {{ mw_installer_folder }}/create-domain-new.py"
+  when: domain_exists.stat.exists == False
+
+- name: Add Oracle Home environment variables
+  lineinfile: 
+    dest: '/home/{{ oracle_user }}/.bashrc' 
+    line: 'export ORACLE_HOME={{ middleware_home }}'
+
+- name: Running pack on Admin node
+  shell: "{{ middleware_home }}/oracle_common/common/bin/pack.sh -domain={{ domains_home }}/{{ domain_name }} -managed=true -template={{ domains_home }}/{{ domain_name }}/templates/{{ domain_name }}.jar -template_name={{ domain_name }} -log=/tmp/pack.log -log_priority=debug"
+  
+- name: Fetching packed domain from admin node
+  fetch: src={{ domains_home }}/{{ domain_name }}/templates/{{ domain_name }}.jar dest={{ local_sw_path }}/ flat=yes
+    
+- name: Create security folder for admin
+  file: path={{ domains_home }}/{{ domain_name }}/servers/AdminServer/security state=directory
+  
+- name: Copying boot identity for admin
+  template: src=boot.properties dest={{ domains_home }}/{{ domain_name }}/servers/AdminServer/security mode=554
+
+#- name: Start admin server
+#  shell: 'cd {{ domains_home }}/{{ domain_name }}/bin && nohup ./startWebLogic.sh > nohup.out 2>&1 &'
+
+#- name: Wait for admin server to start
+#  wait_for:
+#    host: '{{ inventory_hostname }}'
+#    port: 7001
+#    connect_timeout: 600
+#    delay: 10
+#    state: started

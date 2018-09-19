@@ -14,10 +14,19 @@
     state: started
   when: admin == "true"
 
+#- name: Pause for 2 mins
+#  pause:
+#    minutes: 2
+
 - name: Copy managed servers startup script
   template: 
     src: startMS.py
     dest: '{{ remote_jdk_path }}'
 
-- name: Start managed servers
+- name: Start managed servers on admin node
   shell: '{{ middleware_home }}/oracle_common/common/bin/wlst.sh {{ remote_jdk_path }}/startMS.py'
+  when: admin == "true"
+ 
+- name: Start managed servers on managed nodes
+  shell: '{{ middleware_home }}/oracle_common/common/bin/wlst.sh {{ remote_jdk_path }}/startMS.py'
+  when: admin == "false"

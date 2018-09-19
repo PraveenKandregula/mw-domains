@@ -32,11 +32,11 @@ SOA_DB_USER={{ db_user }}
 SOA_SID={{ dbserver_service }}
 
 #XREF
-XREF_TEMP_TABLESPACE=
+XREF_TEMP_TABLESPACE=TEMP
 XREF_SCHEMA_PASSWORD={{ datasource_password }}
 SPLIT_XREF=true
 XREF_DEFAULT_TABLESPACE=
-XREF_SCHEMA_NAME={{ domain_name }}_COMMS_XREF
+XREF_SCHEMA_NAME={{ soa_repo_preffix }}_COMMS_XREF
 XREF_SCHEMA_SYS_ROLE={{ db_role }}
 XREF_SCHEMA_SYS_USER={{ db_user }}
 XREF_SCHEMA_SYS_PASSWORD={{ sysdba_passwd }}

@@ -4,7 +4,7 @@ host2: '172.31.80.122'
 oracle_user: 'ec2-user'
 oracle_group: 'ec2-user'
 fmw_version: '1221'
-oracle_base: '/opt/app/fmw'
+oracle_base: '/opt/app/fmw{{ fmw_version }}'
 middleware_home: '{{ oracle_base }}/product'
 domains_home: '{{ oracle_base }}/domains'
 applications_home: '{{ oracle_base }}/applications'
@@ -32,7 +32,7 @@ aia_home: '{{ middleware_home }}/ORACLE_AIA'
 dbserver_name: 'mymw.cxbnidlxavbf.us-east-1.rds.amazonaws.com'
 dbserver_port: '1521'
 dbserver_service: 'mymw'
-soa_repo_preffix: 'SOAPRA'
+soa_repo_preffix: 'AIAPRA'
 db_user: praveen
 db_role: Normal
 schema_list:
@@ -50,7 +50,7 @@ schema_list:
 
 #########################################
 domain_hosts: '("{{ host1 }}","{{ host2 }}")'
-domain_name: 'soa_domain'
+domain_name: 'praveen_domain'
 weblogic_home: '{{ middleware_home }}/wlserver'
 node_manager_listen_port: '5556'
 #admin_server:
@@ -66,17 +66,17 @@ cluster: {name: 'SOA_Cluster', port: '9000', lb_url: '{{ host2 }}'}
 
 #########################################
 BRM_VER: 7.5
-BRMAPP: {cmhost: 'brmcmhost', port: '12900'}
-BRMDB: {host: 'brmdbhost', port: '1521'}
+BRMAPP: {cmhost: 'localhost', port: '12900'}
+BRMDB: {host: 'localhost', port: '1521'}
 BRMAQ: {user: 'brmaquser', password: 'brmaqpwd', aqname: 'brmaq', sid: 'mymw'}
 
 #########################################
 SBL_VER: 8.1.1.6
 SBL_PROTOCOL: 'http'
-SBLAPP: {entserver: 'sblenthost', apphost: 'sblapphost', port: '9000', eaiuser: 'sbleaiuser', eaipassword: 'sbleaipwd'}
-SBLDB: {host: 'sbldbhost', port: '1521', sid: 'sblsid', user: 'sbldbuser', pwd: 'sbldbpwd'}
+SBLAPP: {entserver: 'localhost', apphost: 'localhost', port: '9000', eaiuser: 'sbleaiuser', eaipassword: 'sbleaipwd'}
+SBLDB: {host: 'localhost', port: '1521', sid: 'sblsid', user: 'sbldbuser', pwd: 'sbldbpwd'}
 
 #########################################
 OSM_VER: 8.5
-OSMCFS: {admin_user: 'osmcfsusr', admin_pwd: 'osmcfspwd', jms_usr: 'cfsjmsqueueaccessusr', jms_pwd: 'cfsjmsqueueaccesspwd', jms_port: '8001', jms_host: 'cfsosmjmshost'}
-OSMPROV: {admin_user: 'osmprovusr', admin_pwd: 'osmprovpwd', jms_usr: 'provjmsqueueaccessusr', jms_pwd: 'provjmsqueueaccesspwd', jms_port: '8001', jms_host: 'provosmjmshost'}
+OSMCFS: {admin_user: 'osmcfsusr', admin_pwd: 'osmcfspwd', jms_usr: 'cfsjmsqueueaccessusr', jms_pwd: 'cfsjmsqueueaccesspwd', jms_port: '8001', jms_host: 'localhost'}
+OSMPROV: {admin_user: 'osmprovusr', admin_pwd: 'osmprovpwd', jms_usr: 'provjmsqueueaccessusr', jms_pwd: 'provjmsqueueaccesspwd', jms_port: '8001', jms_host: 'localhost'}
